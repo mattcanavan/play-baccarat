@@ -1,21 +1,16 @@
 *::after, *::before{
     box-sizing: border-box;
 }
-*{
-    border: 1px tomato solid;
-}
 
 body{
     margin: 0;
     display: grid;
     grid-template-columns: repeat(3, 10rem);
-    grid-template-rows: 16rem 4rem 16rem;
+    grid-template-rows: 6rem 16rem 4rem 16rem;
     gap: .5rem;
     cursor: pointer;
     justify-content: center;
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-
+    padding-top: 1%;
 }
 
 .card-slot {
@@ -30,11 +25,28 @@ body{
     font-size: 3rem;
 }
 
+.player-card-slot-three, .banker-card-slot-three {
+    margin-left: 3rem;
+    transform: rotate(90deg);
+}
+
+.title{
+    grid-column: span 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    font-style: italic;
+}
+
 .text{
     grid-column: span 3;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 1.5rem;
+    border: 1px solid black;
+    font-style: italic;
 }
 
 .card{
@@ -48,7 +60,6 @@ body{
     align-items: center;
     border-radius: .5rem;
     font-size: 6rem;
-
 }
 
 .card.red{
