@@ -79,6 +79,7 @@ function runGame() {
         if (bankerCount === 0 || bankerCount === 1 || bankerCount === 2) {
           // must draw
           banker.push(deck.draw());
+          bankerSlotThree.appendChild(banker[2].getHTML())
         } else if (
           bankerCount === 3 ||
           bankerCount === 4 ||
@@ -104,6 +105,7 @@ function runGame() {
         const val = CARD_VALUE_MAP[value.value];
         return (acc + val) % 10;
       }, 0);
+      debugger
 
       // FINAL comparison
       if (playerFinalCount === bankerFinalCount){
