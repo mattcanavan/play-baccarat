@@ -105,7 +105,6 @@ function runGame() {
         const val = CARD_VALUE_MAP[value.value];
         return (acc + val) % 10;
       }, 0);
-      debugger
 
       // FINAL comparison
       if (playerFinalCount === bankerFinalCount){
