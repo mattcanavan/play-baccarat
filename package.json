@@ -1,0 +1,12 @@
+{
+  "name": "2021-02-02_JS-card-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "deck.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
