@@ -1,15 +1,12 @@
 *::after, *::before{
     box-sizing: border-box;
 }
-/* *{
-    border: 1px tomato solid;
-} */
 
 body{
     margin: 0;
     display: grid;
     grid-template-columns: repeat(3, 10rem);
-    grid-template-rows: 16rem 4rem 16rem;
+    grid-template-rows: 6rem 16rem 4rem 16rem;
     gap: .5rem;
     cursor: pointer;
     justify-content: center;
@@ -33,6 +30,15 @@ body{
     transform: rotate(90deg);
 }
 
+.title{
+    grid-column: span 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    font-style: italic;
+}
+
 .text{
     grid-column: span 3;
     display: flex;
@@ -40,6 +46,7 @@ body{
     align-items: center;
     font-size: 1.5rem;
     border: 1px solid black;
+    font-style: italic;
 }
 
 .card{
