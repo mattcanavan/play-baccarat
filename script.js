@@ -40,15 +40,14 @@ function runGame() {
   dealCards()
     .then((obj) => {
       //   initial vals
-      const playerThirdCard = [];
-      const bankerThirdCard = [];
+      const { player, banker } = obj;
 
       // Count hand totals with reducer, where 0 is the initial value
-      const playerCount = obj.player.reduce((acc, value) => {
+      const playerCount = player.reduce((acc, value) => {
         const val = CARD_VALUE_MAP[value.value];
         return (acc + val) % 10;
       }, 0);
-      const bankerCount = obj.banker.reduce((acc, value) => {
+      const bankerCount = banker.reduce((acc, value) => {
         const val = CARD_VALUE_MAP[value.value];
         return (acc + val) % 10;
       }, 0);
@@ -69,8 +68,8 @@ function runGame() {
 
       // PLAYER
       if (playerCount <= 5) {
-        playerThirdCard.push(deck.draw());
-        playerSlotThree.appendChild(playerThirdCard[0].getHTML())
+        player.push(deck.draw());
+        playerSlotThree.appendChild(player[2].getHTML())
       } else{
         // stand
       }
@@ -79,7 +78,7 @@ function runGame() {
       if (bankerCount <= 7) {
         if (bankerCount === 0 || bankerCount === 1 || bankerCount === 2) {
           // must draw
-          bankerThirdCard.push(deck.draw());
+          banker.push(deck.draw());
         } else if (
           bankerCount === 3 ||
           bankerCount === 4 ||
@@ -87,9 +86,9 @@ function runGame() {
           bankerCount === 6
         ) {
           // depends on player's 3rd card
-          if (!playerThirdCard.length) {
-            bankerThirdCard.push(deck.draw());
-            bankerSlotThree.appendChild(bankerThirdCard[0].getHTML())
+          if (!player.length) {
+            banker.push(deck.draw());
+            bankerSlotThree.appendChild(banker[2].getHTML())
           } else{
             // stand
           }
@@ -97,25 +96,14 @@ function runGame() {
       }
 
       // FINAL count
-      const playerFinalCount = playerThirdCard.reduce((acc, value) => {
-        if(!value){
-          return playerCount
-        } else{
-          const val = parseInt(CARD_VALUE_MAP[value.value]) + playerCount;
-          return (acc + val) % 10;
-        }
+      const playerFinalCount = player.reduce((acc, value) => {
+        const val = CARD_VALUE_MAP[value.value];
+        return (acc + val) % 10;
       }, 0);
-      const bankerFinalCount = bankerThirdCard.reduce((acc, value) => {
-        if(!value){
-          return bankerCount
-        } else{
-          const val = CARD_VALUE_MAP[value.value] + bankerCount;
-          debugger
-          return (acc + val) % 10;
-        }
+      const bankerFinalCount = banker.reduce((acc, value) => {
+        const val = CARD_VALUE_MAP[value.value];
+        return (acc + val) % 10;
       }, 0);
-
-      console.log(playerFinalCount, bankerFinalCount)
 
       // FINAL comparison
       if (playerFinalCount === bankerFinalCount){
@@ -124,9 +112,6 @@ function runGame() {
         return playerFinalCount < bankerFinalCount ? textArea.innerText = "Banker Wins" : textArea.innerText = "Player Wins"
       }
     })
-    .then((results) => {
-      return console.log(results);
-    });
 }
 
 // HELPER FUNCTIONS
