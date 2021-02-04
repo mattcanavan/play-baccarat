@@ -4,7 +4,7 @@ const VALUES = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"
 
 // CLASS for entire Deck
 export default class Deck {
-    constructor(cards = freshDeck()){
+    constructor(cards = [...freshDeck(), ...freshDeck(), ...freshDeck(), ...freshDeck()]){
         this.cards = cards
     }
     
