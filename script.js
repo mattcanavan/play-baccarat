@@ -1,8 +1,8 @@
 import Deck from "./deck.js";
 
 // GLOBAL variables
-let deck;
 let gameOver = false;
+let deck;
 const CARD_VALUE_MAP = {
   A: 1,
   2: 2,
@@ -33,9 +33,13 @@ document.addEventListener("click", runGame);
 
 // RUN GAME
 function runGame() {
+
   // INITALIZE new deck
-  let deck = new Deck();
-  deck.shuffle();
+  if (!deck || deck.numberOfCards < Math.floor(Math.random() * (100 - 26 + 1) + 26)){
+    // if deck is empty or less than a random number between 26-100
+    deck = new Deck();
+    deck.shuffle();
+  }
 
   // clean board if game over and wait for next mouse click
   if (gameOver) {
@@ -45,7 +49,22 @@ function runGame() {
   }
 
   // else
-  dealCards().then((obj) => {
+  new Promise(function(resolve) {
+    // Deal the cards: two from top of deck to player first.
+    const playerCards = [];
+    playerCards.push(deck.draw(), deck.draw());
+    const bankerCards = [];
+    bankerCards.push(deck.draw(), deck.draw());
+
+    // Append cards to DOM
+    bankerSlotOne.appendChild(bankerCards[0].getHTML());
+    playerSlotOne.appendChild(playerCards[0].getHTML());
+    playerSlotTwo.appendChild(playerCards[1].getHTML());
+    bankerSlotTwo.appendChild(bankerCards[1].getHTML());
+
+    resolve({ player: playerCards, banker: bankerCards })
+  })
+  .then((obj) => {
     // INITIAL hands
     const { player, banker } = obj;
 
@@ -166,27 +185,6 @@ function cleanGameBoard() {
   playerSlotOne.innerHTML = "";
   playerSlotTwo.innerHTML = "";
   playerSlotThree.innerHTML = "";
-}
-
-// Deal the cards
-function dealCards() {
-  return new Promise(function (resolve) {
-    // Deal the cards: two from top of deck to player first.
-    // (rather than 1 from top to each player, twice)
-    const playerCards = [];
-    playerCards.push(deck.draw(), deck.draw());
-    const bankerCards = [];
-    bankerCards.push(deck.draw(), deck.draw());
-
-    // Append cards to DOM
-    bankerSlotOne.appendChild(bankerCards[0].getHTML());
-    playerSlotOne.appendChild(playerCards[0].getHTML());
-    playerSlotTwo.appendChild(playerCards[1].getHTML());
-    bankerSlotTwo.appendChild(bankerCards[1].getHTML());
-
-    // resolve cards
-    resolve({ player: playerCards, banker: bankerCards });
-  });
 }
 
 // // REDUCERS
