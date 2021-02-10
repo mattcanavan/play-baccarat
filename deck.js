@@ -12,6 +12,10 @@ export default class Deck {
         return this.cards.length
     }
 
+    get thirdCardValue() {
+        return this.cards[2].value
+    }
+
     draw() {
         return this.cards.shift()
 

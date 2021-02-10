@@ -33,10 +33,11 @@ document.addEventListener("click", runGame);
 
 // RUN GAME
 function runGame() {
-
-  // INITALIZE new deck
-  if (!deck || deck.numberOfCards < Math.floor(Math.random() * (100 - 26 + 1) + 26)){
-    // if deck is empty or less than a random number between 26-100
+  // Initialize new deck if deck is empty or less than a random number between 26-100
+  if (
+    !deck ||
+    deck.numberOfCards < Math.floor(Math.random() * (100 - 26 + 1) + 26)
+  ) {
     deck = new Deck();
     deck.shuffle();
   }
@@ -45,132 +46,156 @@ function runGame() {
   if (gameOver) {
     cleanGameBoard();
     gameOver = false;
-    return
+    return;
   }
 
   // else
-  new Promise(function(resolve) {
-    // Deal the cards: two from top of deck to player first.
-    const playerCards = [];
-    playerCards.push(deck.draw(), deck.draw());
-    const bankerCards = [];
-    bankerCards.push(deck.draw(), deck.draw());
+  return new Promise((resolve) => {
+    // Deal the cards: one at a time
+    const playerHand = [];
+    const bankerHand = [];
+    drawCard(playerHand);
+    drawCard(bankerHand);
+    drawCard(playerHand);
+    drawCard(bankerHand);
 
     // Append cards to DOM
-    bankerSlotOne.appendChild(bankerCards[0].getHTML());
-    playerSlotOne.appendChild(playerCards[0].getHTML());
-    playerSlotTwo.appendChild(playerCards[1].getHTML());
-    bankerSlotTwo.appendChild(bankerCards[1].getHTML());
+    displayCard({ player: playerHand });
+    displayCard({ banker: bankerHand });
 
-    resolve({ player: playerCards, banker: bankerCards })
-  })
-  .then((obj) => {
-    // INITIAL hands
-    const { player, banker } = obj;
+    // Resolve promise
+    resolve({ playerHand, bankerHand })
 
-    // INITIAL hand score
-    const playerCount = sumHand(player);
-    const bankerCount = sumHand(banker);
+  }).then((handsObj) => {
+    // First Review
+    // hands
+    const { playerHand, bankerHand } = handsObj;
+    // hand score
+    let playerCount = sumHand(playerHand);
+    let bankerCount = sumHand(bankerHand);
 
-    // Step through hands https://www.onlinecasinoselite.org/getting-started/gambling-rules/baccarat
-    // http://www.casinocity.com/rule/baccarat.htm
+    // Step through hands http://www.casinocity.com/rule/baccarat.htm
     switch (true) {
-      
-      // First Review
       case playerCount === 8 && bankerCount === 8:
       case playerCount === 9 && bankerCount === 9:
-        gameOver = true
-        textArea.innerText = "Draw"
-        break
+        throw "Draw";
       case playerCount === 9:
-        gameOver = true
-        textArea.innerText = "Player Wins"
-        break
+        throw "Player Wins";
       case bankerCount === 9:
-        gameOver = true
-        textArea.innerText = "Banker Wins"
-        break
-      
-        // Player Review
-      case playerCount <= 5:
-        player.push(deck.draw());
-        playerSlotThree.appendChild(player[2].getHTML())
-      
-        // Banker Review
-      case bankerCount >= 7:
-        break // stand
-      case bankerCount <= 2:
-        banker.push(deck.draw())
-        bankerSlotThree.appendChild(banker[2].getHTML())
-        break
-
-        // Banker's 3rd depends on player's 3rd
-      case player.length < 3 && bankerCount >= 6:
-        break //stand
-      case player.length < 3 && bankerCount <= 5:
-        banker.push(deck.draw())
-        bankerSlotThree.appendChild(banker[2].getHTML())
-        break
-
-      case player[2].value === 0 || player[2].value === 1:
-      case bankerCount <= 3:
-        banker.push(deck.draw())
-        bankerSlotThree.appendChild(banker[2].getHTML())
-        break
-      
-      case player[2].value === 2 || player[2].value === 3:
-      case bankerCount <= 4:
-        banker.push(deck.draw())
-        bankerSlotThree.appendChild(banker[2].getHTML())
-        break
-
-      case player[2].value === 4 || player[2].value === 5:
-      case bankerCount <= 5:
-        banker.push(deck.draw())
-        bankerSlotThree.appendChild(banker[2].getHTML())
-        break
-
-      case player[2].value === 6 || player[2].value === 7:
-      case bankerCount <= 6:
-        banker.push(deck.draw())
-        bankerSlotThree.appendChild(banker[2].getHTML())
-        break
-
-      case player[2].value === 8:
-      case bankerCount <= 2:
-        banker.push(deck.draw())
-        bankerSlotThree.appendChild(banker[2].getHTML())
-        break
-
-      case player[2].value === 9:
-      case bankerCount <= 3:
-        banker.push(deck.draw())
-        bankerSlotThree.appendChild(banker[2].getHTML())
-        break
+        throw "Banker Wins";
     }
 
-    // if game over, return 
-    if (gameOver){
-      // end game
-      return 
-    }
+    // Resolve promise
+    return Promise.resolve(handsObj)
 
-    // else
-    // FINAL hand score
-    const playerFinalCount = sumHand(player);
-    const bankerFinalCount = sumHand(banker);
+  })
+    .then((handsObj) => {
+      // // Player and Banker Review
+      // hands
+      const { playerHand, bankerHand } = handsObj;
+      // hand score
+      let playerCount = sumHand(playerHand);
+      let bankerCount = sumHand(bankerHand);
 
-    // FINAL comparison
-    if (playerFinalCount === bankerFinalCount) {
-      gameOver = true;
-      return (textArea.innerText = "Draw");
-    } else {
-      gameOver = true;
-      return playerFinalCount < bankerFinalCount
-        ? (textArea.innerText = "Banker Wins")
-        : (textArea.innerText = "Player Wins");
-    }
-  });
+      switch (true) {
+        case playerCount <= 5:
+          drawCard(playerHand);
+          displayCard({ player: playerHand });
+      }
+
+      // banker hand score
+      switch (true) {
+        case bankerCount >= 7: // do nothing
+        // case bankerCount 3-6 do nothing
+        case bankerCount <= 2:
+          drawCard(bankerHand);
+          displayCard({ banker: bankerHand });
+      }
+
+      // Resolve promise
+      return Promise.resolve(handsObj)
+
+    })
+    .then((handsObj) => {
+      // // Banker's 3rd depends on player's 3rd
+      // hands
+      const { playerHand, bankerHand } = handsObj;
+      // hand score
+      let bankerCount = sumHand(bankerHand);
+
+      switch (true) {
+        case playerHand.thirdCardValue < 3 && bankerCount >= 6: // do nothing
+        case playerHand.thirdCardValue < 3 && bankerCount <= 5:
+          drawCard(banker);
+          displayCard({ banker: bankerHand });
+          break;
+
+        case playerHand.thirdCardValue === 0 ||
+          (playerHand.thirdCardValue === 1 && bankerCount <= 3):
+          drawCard(banker);
+          displayCard({ banker: bankerHand });
+          break;
+
+        case playerHand.thirdCardValue === 2 ||
+          (playerHand.thirdCardValue === 3 && bankerCount <= 4):
+          drawCard(banker);
+          displayCard({ banker: bankerHand });
+          break;
+
+        case playerHand.thirdCardValue === 4 ||
+          (playerHand.thirdCardValue === 5 && bankerCount <= 5):
+          drawCard(banker);
+          displayCard({ banker: bankerHand });
+          break;
+
+        case playerHand.thirdCardValue === 6 ||
+          (playerHand.thirdCardValue === 7 && bankerCount <= 6):
+          drawCard(banker);
+          displayCard({ banker: bankerHand });
+          break;
+
+        case playerHand.thirdCardValue === 8 && bankerCount <= 2:
+          drawCard(banker);
+          displayCard({ banker: bankerHand });
+          break;
+
+        case playerHand.thirdCardValue === 9 && bankerCount <= 3:
+          drawCard(banker);
+          displayCard({ banker: bankerHand });
+          break;
+      }
+
+      // Resolve promise
+      return Promise.resolve(handsObj)
+
+    })
+    .then((handsObj) => {
+      // hands
+      const { playerHand, bankerHand } = handsObj;
+
+      // FINAL Scoring
+      const playerFinalCount = sumHand(playerHand);
+      const bankerFinalCount = sumHand(bankerHand);
+
+      if (playerFinalCount === bankerFinalCount) {
+        throw "Draw"
+      } else {
+        throw playerFinalCount < bankerFinalCount ? "Banker Wins" : "Player Wins";
+      }
+    })
+    .catch(result => {
+      setTimeout(() => {
+        switch (result) {
+          case "Draw":
+            textArea.innerText = result
+          case "Banker Wins":
+            textArea.innerText = result
+          case "Player Wins":
+            textArea.innerText = result
+        }
+      }, 2000);
+      return gameOver = true;
+    })
 }
 
 // HELPER FUNCTIONS
@@ -185,6 +210,31 @@ function cleanGameBoard() {
   playerSlotOne.innerHTML = "";
   playerSlotTwo.innerHTML = "";
   playerSlotThree.innerHTML = "";
+}
+
+function drawCard(handAry) {
+  return handAry.push(deck.draw());
+}
+
+function displayCard(obj) {
+  //was the player hand passed in?
+  if (obj.player != undefined) {
+    if (obj.player.length === 2) {
+      playerSlotOne.appendChild(obj.player[0].getHTML());
+      playerSlotTwo.appendChild(obj.player[1].getHTML());
+    } else {
+      playerSlotThree.appendChild(obj.player[2].getHTML());
+    }
+  }
+  //was the banker hand passed in?
+  else if (obj.banker != undefined) {
+    if (obj.banker.length === 2) {
+      bankerSlotOne.appendChild(obj.banker[0].getHTML());
+      bankerSlotTwo.appendChild(obj.banker[1].getHTML());
+    } else {
+      bankerSlotThree.appendChild(obj.banker[2].getHTML());
+    }
+  }
 }
 
 // // REDUCERS
