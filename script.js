@@ -223,9 +223,7 @@ function displayCard(obj) {
       playerSlotOne.appendChild(obj.player[0].getHTML());
       playerSlotTwo.appendChild(obj.player[1].getHTML());
     } else {
-      setTimeout(() => {
-        playerSlotThree.appendChild(obj.player[2].getHTML());
-      }, 1000);
+      playerSlotThree.appendChild(obj.player[2].getHTML());
     }
   }
   //was the banker hand passed in?
@@ -234,9 +232,7 @@ function displayCard(obj) {
       bankerSlotOne.appendChild(obj.banker[0].getHTML());
       bankerSlotTwo.appendChild(obj.banker[1].getHTML());
     } else {
-      setTimeout(() => {
-        bankerSlotThree.appendChild(obj.banker[2].getHTML());
-      }, 1000)
+      bankerSlotThree.appendChild(obj.banker[2].getHTML());
     }
   }
 }
